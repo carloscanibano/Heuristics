@@ -44,13 +44,19 @@ void compare_open_close(vector<State>& o, vector<State>& c, State& child_state){
 	vector<State>::iterator itOpen = find(o.begin(), o.end(), child_state);
 	vector<State>::iterator itClose = find(c.begin(), c.end(), child_state);
 
+	//cout << child_state.al_x_pos << endl;
+
 	if((itOpen == o.end()) && (itClose == c.end())){
+		//cout << "mete" << endl;
 		o.push_back(child_state);
 		sort(o.begin(), o.end());
 	} else if((itOpen != o.end()) && (o.at(distance(o.begin(), itOpen)).f > child_state.f)){
+		//cout << "mete" << endl;
 		o.erase(itOpen);
 		o.push_back(child_state);
 		sort(o.begin(), o.end());
+	} else {
+		//cout << " no mete" << endl;
 	}
 }
 
@@ -93,14 +99,22 @@ void move_rock(State& s){
 	tuple<int, int> new_rock;
 	s.state_rocks.erase(it);
 
-	if(s.father_x < s.al_x_pos){
+	if((s.father_x < s.al_x_pos) && (s.father_y == s.al_y_pos)){
 		new_rock = make_tuple(s.al_x_pos + 1, s.al_y_pos);
-	} else if(s.father_x > s.al_x_pos){
+	} else if((s.father_x > s.al_x_pos) && (s.father_y == s.al_y_pos)){
 		new_rock = make_tuple(s.al_x_pos - 1, s.al_y_pos);
-	} else if(s.father_y < s.al_y_pos){
+	} else if((s.father_x == s.al_x_pos) && (s.father_y < s.al_y_pos)){
 		new_rock = make_tuple(s.al_x_pos, s.al_y_pos + 1);
-	} else if(s.father_y > s.al_y_pos){
+	} else if((s.father_x == s.al_x_pos) && (s.father_y > s.al_y_pos)){
 		new_rock = make_tuple(s.al_x_pos, s.al_y_pos - 1);
+	}else if((s.father_x < s.al_x_pos) && (s.father_y < s.al_y_pos)){
+		new_rock = make_tuple(s.al_x_pos + 1, s.al_y_pos + 1);
+	}else if((s.father_x < s.al_x_pos) && (s.father_y > s.al_y_pos)){
+		new_rock = make_tuple(s.al_x_pos + 1, s.al_y_pos - 1);
+	}else if((s.father_x > s.al_x_pos) && (s.father_y < s.al_y_pos)){
+		new_rock = make_tuple(s.al_x_pos - 1, s.al_y_pos + 1);
+	}else if((s.father_x > s.al_x_pos) && (s.father_y > s.al_y_pos)){
+		new_rock = make_tuple(s.al_x_pos - 1, s.al_y_pos - 1);
 	}
 
 	s.state_rocks.push_back(new_rock);
@@ -157,7 +171,7 @@ double heuristic_2(State& s, vector<tuple<int, int>> k, tuple<int, int> e){
 			//second_key = sqrt(pow(s.al_x_pos - get<0>(key), 2) + pow(s.al_y_pos - get<1>(key), 2));
 			//first_key = min(first_key, second_key);
 			first_key += sqrt(pow(s.al_x_pos - get<0>(k[0]), 2) + pow(s.al_y_pos - get<1>(k[0]), 2));
-		}		
+		}
 	}
 
 	exit_distance = sqrt(pow(s.al_x_pos - get<0>(e), 2) + pow(s.al_y_pos - get<1>(e), 2));
@@ -221,7 +235,7 @@ bool compare_objects(vector<tuple<int, int>> obj1, vector<tuple<int, int>> obj2)
 	return equal;
 }
 
-void apply_movement(vector<State>& open, vector<State>& close, State& state, vector<tuple<int, int>>& walls, 
+void apply_movement(vector<State>& open, vector<State>& close, State& state, vector<tuple<int, int>>& walls,
 					vector<tuple<int, int>>& snakes, tuple<int, int> goal, int heuristic_function,
 					int rows, int cols, int x, int y, int& global_id){
 	char c;
@@ -352,6 +366,24 @@ int main(int argc, char *argv[]) {
 				apply_movement(open, close, state, walls, snakes, goal, heuristic_function,
 					 rows, cols, 0, -1, global_id);
 			}
+
+			if((state.al_x_pos + 1 < rows) && (state.al_y_pos + 1 < cols)){
+				apply_movement(open, close, state, walls, snakes, goal, heuristic_function,
+					 rows, cols, 1, 1, global_id);
+			}
+			if((state.al_x_pos + 1 < rows) && (state.al_y_pos - 1 >= 0)){
+				apply_movement(open, close, state, walls, snakes, goal, heuristic_function,
+					 rows, cols, 1, -1, global_id);
+			}
+			if((state.al_x_pos - 1 >= 0) && (state.al_y_pos + 1 < cols)){
+				apply_movement(open, close, state, walls, snakes, goal, heuristic_function,
+					 rows, cols, -1, 1, global_id);
+			}
+			if((state.al_x_pos - 1 >= 0) && (state.al_y_pos - 1 >= 0)){
+				apply_movement(open, close, state, walls, snakes, goal, heuristic_function,
+					 rows, cols, -1, -1, global_id);
+			}
+
 		}
 		//cout << endl;
 	}
