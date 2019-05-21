@@ -1,2 +1,2 @@
-# Heuristics
-Heuristics 2nd practice
+# SAT & A*
+See "memoria.pdf" for more details
