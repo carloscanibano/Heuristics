@@ -31,9 +31,7 @@ public:
 	int g;
 	//h(n) heuristic cost
 	double h;
-	//Allow father generation
-	bool allow_father;
-	//Custom operator for sorting
+	//Custom operator for sorting by f(n) value
 	bool operator < (const State &other) const {
     	return f < other.f;
     }
@@ -44,9 +42,12 @@ public:
     	tuple<int, int> rock;
     	tuple<int, int> key;
 
+    	//First, we check for the same x and y positions
     	if((al_x_pos == other.al_x_pos) && (al_y_pos == other.al_y_pos)){
     		equals = true;
+    		//If the keys vector has te same size then we continue
 	    	if((state_keys.size() == other.state_keys.size())){
+	    		//Comparing keys one by one
 	    		while((counter < state_keys.size()) && (equals)){
 	    			key = other.state_keys.at(counter);
 	    			if(find(state_keys.begin(), state_keys.end(), key) == state_keys.end()){
@@ -57,9 +58,10 @@ public:
 	    	} else {
 	    		equals = false;
 	    	}
+	    	//We only need to check rocks in case keys check was successful
     		if(equals){
 	    		counter = 0;
-
+	    		//Comparing rocks one by one
 	    		while((counter < state_rocks.size()) && (equals)){
 	    			rock = other.state_rocks.at(counter);
 	    			if(find(state_rocks.begin(), state_rocks.end(), rock) == state_rocks.end()){
@@ -86,6 +88,5 @@ State::State(){
 	f = 0.0;
 	g = 0;
 	h = 0.0;
-	allow_father = false;
 }
 #endif
